@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Raio-X da Agenda Particular: descubra em que ponto do atendimento seus pacientes particulares estão desistindo.">
+<title>Raio-X da Agenda Particular · Dra. Carolina Sato</title>
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','29111966828462731');
+fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=29111966828462731&ev=PageView&noscript=1"></noscript>
+<!-- Fim do Meta Pixel -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: identidade do banner da Dra. Carolina. Fundo lavanda claro, cartões brancos com sombra suave, serifa de destaque com itálico lilás, botão grafite em pílula.
+   Visual único e claro, de propósito: os banners são imagens claras. Barra de revisão no topo e índice de telas à esquerda no desktop. */
+:root{
+  color-scheme:light;
+  --bg:#f6f3f8; --bg-2:#efe9f4; --surface:#ffffff; --ink:#1d1d20; --muted:#5f5b68; --line:#e7e1ee;
+  --lilac:#8d7ea3; --lilac-deep:#6f5f88; --lilac-soft:#efe9f6; --lilac-tint:#f7f4fa;
+  --btn:#212122; --on-btn:#ffffff; --go:#18b057; --go-edge:#0e7f3d;
+  --ok:#3f8a62; --ok-soft:#e6f2ea; --warn:#a8741a; --warn-soft:#f8eedb; --bad:#b9483f; --bad-soft:#f8e6e3;
+  --note:#4f46c8; --note-soft:#ebeafc;
+  --bar:#212122; --bar-ink:#f4f1f7; --bar-muted:#a9a3b4; --bar-btn:#34333a;
+  --shadow:0 1px 2px rgba(60,40,90,.05),0 10px 30px -12px rgba(80,60,110,.18);
+  --serif:"DM Serif Display",Georgia,"Times New Roman",serif;
+  --sans:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);background-image:radial-gradient(80% 50% at 85% 0%,var(--bg-2),transparent 70%);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;min-height:100%}
+button,input,select{font:inherit;color:inherit}
+p,h1,h2,h3{margin:0}
+:focus-visible{outline:3px solid var(--lilac);outline-offset:2px}
+em{font-style:italic}
+
+/* Barra de revisão */
+.rev{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bar);color:var(--bar-ink);display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 16px}
+.rev-tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#c9bddc}
+.rev select{background:var(--bar-btn);border:0;border-radius:8px;padding:7px 8px;color:var(--bar-ink);min-width:0;max-width:100%;flex:1 1 220px}
+.rev .grp{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rev button{background:var(--bar-btn);border:0;border-radius:8px;padding:7px 11px;color:var(--bar-ink);cursor:pointer;font-size:14px}
+.rev button:hover{filter:brightness(1.3)}
+.rev .count{font-variant-numeric:tabular-nums;color:var(--bar-muted);font-size:13px;min-width:48px;text-align:center}
+.rev .grp span{font-size:12px;color:var(--bar-muted)}
+.rev .grow{flex:1 1 0}
+.rev #asdoc{background:#c9bddc;color:#1d1d20;font-weight:700}
+.backrev{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--bar);color:var(--bar-ink);border:0;border-radius:999px;padding:10px 16px;box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer;font-weight:600}
+
+/* Estrutura */
+.app{display:grid;grid-template-columns:1fr;gap:28px;padding-inline:16px;padding-block:24px 72px;max-width:1240px;margin:0 auto}
+@media (min-width:960px){.app.review{grid-template-columns:220px minmax(0,1fr)}}
+.side{display:none}
+@media (min-width:960px){.app.review .side{display:block;position:sticky;top:76px;align-self:start;max-height:calc(100vh - 100px);overflow:auto}}
+.side h2{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px;font-weight:800}
+.side h2:first-child{margin-top:0}
+.side ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.side button{width:100%;text-align:left;background:none;border:0;border-radius:10px;padding:6px 10px;cursor:pointer;font-size:13.5px;display:flex;gap:8px;align-items:center}
+.side button:hover{background:var(--surface)}
+.side button.cur{background:var(--btn);color:var(--on-btn)}
+.side .dot{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+.side .dot.done{background:var(--lilac)}
+.side button.cur .dot{background:#c9bddc}
+.stage{min-width:0;display:flex;flex-direction:column;align-items:center;gap:18px}
+.col{width:100%;max-width:560px;display:flex;flex-direction:column;gap:18px}
+
+/* Banner (imagem) */
+.banner{display:block;width:100%;max-width:1200px;padding:0;border:0;background:none;cursor:pointer;border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}
+.banner img{display:block;width:100%;height:auto;max-width:100%}
+.banner-img{display:block;width:100%;height:auto;max-width:100%;border-radius:20px;box-shadow:var(--shadow)}
+@media (max-width:480px){.banner-img{border-radius:14px}}
+.banner-ph{width:100%;aspect-ratio:560/250;max-width:100%;border:2px dashed var(--lilac);border-radius:20px;background:var(--lilac-tint);display:grid;place-content:center;justify-items:center;gap:6px;text-align:center;padding:16px;color:var(--muted)}
+.banner-ph b{font-family:var(--serif);font-weight:400;font-size:clamp(22px,5.4vw,28px);color:var(--ink);line-height:1.1}
+.banner-ph .eb{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--lilac-deep)}
+.banner-ph span{font-size:13.5px;max-width:40ch}
+.banner-ph small{font-size:11px;font-weight:700;color:var(--note)}
+.h1{font-family:var(--serif);font-weight:400;font-size:clamp(30px,7.4vw,40px);line-height:1.1;text-align:center;text-wrap:balance}
+.h1 em{display:block;color:var(--lilac);font-size:.82em;margin-top:6px}
+.h2{text-align:center;font-size:17px;color:var(--ink);max-width:44ch;margin:0 auto;text-wrap:balance}
+.h2 b{color:var(--lilac-deep)}
+.footline{text-align:center;font-size:14.5px;color:var(--muted);font-style:italic;max-width:46ch;margin:0 auto}
+
+/* Abertura */
+.headline{font-family:var(--serif);font-weight:400;font-size:clamp(26px,6.2vw,34px);line-height:1.15;text-align:center;text-wrap:balance;letter-spacing:-.005em}
+.headline em{color:var(--lilac)}
+.subhead{text-align:center;color:var(--muted);font-size:16px;max-width:52ch;margin:0 auto}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:grid;gap:12px;box-shadow:var(--shadow)}
+.card h4{margin:0;font-size:15px;font-weight:800}
+.reassure{display:flex;gap:12px;align-items:flex-start;background:var(--lilac-soft);border-radius:16px;padding:14px 16px;font-size:15px}
+.reassure svg{width:22px;height:22px;flex:none;color:var(--lilac-deep);margin-top:1px}
+
+.cta{display:flex;justify-content:center;align-items:center;gap:10px;width:100%;background:var(--go);color:#fff;border:0;border-radius:999px;padding:19px 22px;font-weight:800;font-size:17.5px;cursor:pointer;text-align:center;box-shadow:0 5px 0 var(--go-edge);transition:transform .1s,filter .1s;animation:go-pulse 1.6s ease-out infinite;margin-bottom:5px}
+.cta:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.cta:active{transform:translateY(3px)}
+.cta[disabled]{opacity:.35;cursor:not-allowed;transform:none;animation:none;filter:none}
+@keyframes go-pulse{0%{box-shadow:0 5px 0 var(--go-edge),0 0 0 0 rgba(24,176,87,.6);transform:scale(1)}50%{transform:scale(1.02)}70%{box-shadow:0 5px 0 var(--go-edge),0 0 0 16px rgba(24,176,87,0)}100%{box-shadow:0 5px 0 var(--go-edge),0 0 0 0 rgba(24,176,87,0);transform:scale(1)}}
+.alert-h{display:flex;align-items:center;gap:14px;background:#fdf1d2;border:1.5px solid #ecc767;border-radius:16px;padding:14px 16px}
+.alert-h h3{font-family:var(--sans);font-weight:700;font-size:16.5px;line-height:1.35;color:#7a5306}
+.alert-ic{width:38px;height:38px;border-radius:50%;background:#e2a21a;color:#fff;display:grid;place-items:center;flex:none;animation:alarm 1.3s ease-out infinite}
+.alert-ic svg{width:20px;height:20px}
+@keyframes alarm{0%{box-shadow:0 0 0 0 rgba(226,162,26,.65)}70%{box-shadow:0 0 0 14px rgba(226,162,26,0)}100%{box-shadow:0 0 0 0 rgba(226,162,26,0)}}
+@media (prefers-reduced-motion:reduce){.cta,.alert-ic{animation:none}}
+.cta svg{width:18px;height:18px}
+.ghost{background:none;border:0;color:var(--lilac-deep);font-weight:700;cursor:pointer;padding:4px 0;text-decoration:underline;text-underline-offset:3px;justify-self:center}
+ul.check{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+ul.check li{display:flex;gap:12px;align-items:flex-start;font-size:15.5px}
+ul.check li::before{content:"";flex:none;width:22px;height:22px;border-radius:50%;background:var(--lilac) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center/13px no-repeat}
+
+/* Cabeçalho das perguntas */
+.qhead{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px 16px 14px;display:grid;gap:10px;box-shadow:var(--shadow)}
+.qhead .row{display:flex;align-items:center;gap:12px}
+.av{width:40px;height:40px;border-radius:50%;flex:none;object-fit:cover;background:var(--lilac-soft);box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--lilac-soft)}
+.qhead .who{font-size:14px;font-weight:700;line-height:1.25}
+.qhead .who small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+.qhead .step{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--lilac-deep);font-variant-numeric:tabular-nums;white-space:nowrap}
+.prog{height:6px;border-radius:99px;background:var(--lilac-soft);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--lilac);border-radius:99px;transition:width .35s}
+
+.chip{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.chip svg{width:14px;height:14px;color:var(--lilac)}
+h2.q{font-family:var(--serif);font-weight:400;font-size:clamp(25px,6vw,31px);line-height:1.18;text-wrap:balance}
+.hint{color:var(--muted);font-size:14px;margin-top:-8px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:14px;align-items:center;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;cursor:pointer;transition:border-color .15s,background .15s,transform .1s;font-size:16px;line-height:1.35;font-weight:500;box-shadow:0 1px 2px rgba(60,40,90,.04)}
+.opt:hover{border-color:var(--lilac);transform:translateY(-1px)}
+.opt .lt{width:30px;height:30px;border-radius:50%;background:var(--lilac-soft);color:var(--lilac-deep);display:grid;place-items:center;flex:none;font-weight:800;font-size:13px}
+.opt.sel{border-color:var(--lilac);background:var(--lilac-tint)}
+.opt.sel .lt{background:var(--lilac);color:#fff}
+.opt .pts{margin-left:auto;font-size:11px;font-weight:800;color:var(--note);background:var(--note-soft);border-radius:6px;padding:2px 6px;white-space:nowrap}
+
+/* Fala da Dra. Carolina */
+.talk{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:end}
+.talk .av{width:44px;height:44px}
+.bubble{background:var(--surface);border:1px solid var(--line);border-radius:20px 20px 20px 6px;padding:16px 18px;font-size:16.5px;line-height:1.5;box-shadow:var(--shadow);display:grid;gap:6px}
+.bubble .from{font-size:12.5px;font-weight:800;color:var(--lilac-deep)}
+.micro{background:var(--warn-soft);border-radius:14px;padding:12px 14px;font-size:15px;font-weight:600}
+.field{display:grid;gap:6px}
+.field label{font-size:14px;font-weight:700}
+.field input{border:1.5px solid var(--line);border-radius:14px;padding:15px 16px;background:var(--surface);font-size:16px}
+.field input:focus{border-color:var(--lilac);outline:none;box-shadow:0 0 0 4px var(--lilac-soft)}
+.err{color:var(--bad);font-size:14px;font-weight:600}
+
+/* Notas de revisão */
+.note{border:1.5px dashed var(--note);background:var(--note-soft);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.45}
+.note b{color:var(--note);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:2px}
+body.preview .note,body.preview .pts{display:none}
+
+/* Resultado */
+.rescard{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px 20px;display:grid;gap:14px;box-shadow:var(--shadow)}
+.rescard .top{display:flex;align-items:center;gap:12px}
+.rescard .top .who{font-size:13px;color:var(--muted);line-height:1.3}
+.rescard .top .who b{display:block;color:var(--ink);font-size:14.5px}
+.lvlpill{justify-self:start;border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:800}
+.lvlpill.l0{background:var(--ok-soft);color:var(--ok)}.lvlpill.l1{background:var(--warn-soft);color:var(--warn)}.lvlpill.l2{background:var(--bad-soft);color:var(--bad)}
+.level{font-family:var(--serif);font-weight:400;font-size:clamp(28px,6.6vw,34px);line-height:1.1}
+.level em{color:var(--lilac)}
+.gtrack{position:relative;height:10px;border-radius:999px;background:linear-gradient(90deg,#e6c27c 0 50%,#df8f86 50% 100%)}
+.gmark{position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:var(--surface);border:5px solid var(--btn);transform:translate(-50%,-50%);box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.glabels{display:grid;grid-template-columns:1fr 1fr;font-size:11.5px;color:var(--muted);margin-top:8px}
+.glabels span:nth-child(2){text-align:center}.glabels span:last-child{text-align:right}
+.items{display:grid;gap:0;border-top:1px solid var(--line)}
+.item{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:start}
+.item:last-child{border-bottom:0}
+.item b{font-size:15.5px;font-weight:700}
+.item .sig{grid-column:1/-1;font-size:14px;color:var(--muted);display:flex;gap:8px}
+.item .sig::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--lilac);margin-top:8px}
+.flag{font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.flag.f0{background:var(--ok-soft);color:var(--ok)}.flag.f1{background:var(--warn-soft);color:var(--warn)}.flag.f2{background:var(--bad-soft);color:var(--bad)}
+.sech{font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.15;text-align:center}
+.sech em{color:var(--lilac)}
+.risks{display:grid;gap:10px}
+.risk{display:grid;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow)}
+.risk b{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:800}
+.risk b i{width:8px;height:8px;border-radius:50%;background:#e2a21a;flex:none}
+.risk span{font-size:16.5px;color:var(--ink);line-height:1.45}
+
+/* Solução recomendada */
+.offer{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px 20px;display:grid;gap:12px;box-shadow:var(--shadow);text-align:center;justify-items:center}
+.offer h1{font-family:var(--serif);font-weight:400;font-size:clamp(32px,8vw,42px);line-height:1.05}
+.offer h1 em{color:var(--lilac)}
+.offer p{font-size:16.5px;color:var(--muted);max-width:44ch}
+.focus{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;background:var(--lilac-soft);border-radius:999px;padding:8px 14px;font-size:14px}
+.focus b{color:var(--lilac-deep)}
+.pillars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pillars div{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:6px;align-content:start;min-width:0;box-shadow:var(--shadow)}
+.pillars i{font-style:normal;width:32px;height:32px;border-radius:10px;background:var(--lilac-soft);color:var(--lilac-deep);display:grid;place-items:center;font-weight:800;font-size:14px}
+.pillars b{font-size:15.5px}
+.pillars span{font-size:14px;color:var(--muted);line-height:1.4}
+@media (max-width:440px){.pillars{grid-template-columns:1fr}}
+.mentor{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start}
+.mentor .av{width:72px;height:72px}
+.mentor b{display:block;font-size:17px}
+.mentor small{display:block;color:var(--lilac-deep);font-weight:700;font-size:12.5px;margin-top:2px}
+.mentor p{font-size:14.5px;color:var(--muted);line-height:1.45;margin-top:8px}
+.diff{display:grid;gap:4px;padding:14px 16px;background:var(--lilac-soft);border-radius:16px;font-size:15px}
+.proof{font-size:16px;font-weight:600;text-align:center;text-wrap:balance}
+.proof em{font-family:var(--serif);font-weight:400;font-size:19px;color:var(--lilac-deep)}
+.decide{background:var(--surface);border:1.5px solid var(--lilac);border-radius:22px;padding:22px 20px;display:grid;gap:14px;box-shadow:var(--shadow)}
+.decide h2{font-family:var(--serif);font-weight:400;font-size:clamp(24px,5.8vw,29px);line-height:1.18;text-wrap:balance;text-align:center}
+.decide h2 em{color:var(--lilac)}
+.decide p{font-size:15.5px;color:var(--muted);text-align:center}
+
+/* Confirmação */
+.done{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:30px 22px 26px;display:grid;gap:14px;justify-items:center;text-align:center;box-shadow:var(--shadow)}
+.done .big-ic{width:58px;height:58px;border-radius:50%;background:var(--lilac);display:grid;place-items:center}
+.done .big-ic::after{content:"";width:13px;height:24px;border:solid #fff;border-width:0 4px 4px 0;transform:rotate(45deg) translate(-2px,-3px)}
+.done h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7vw,36px);line-height:1.1}
+.done h1 em{color:var(--lilac)}
+.done p{font-size:16.5px;color:var(--muted);max-width:40ch}
+.wa{display:inline-flex;gap:10px;align-items:center;font-size:18px;font-weight:800;background:var(--lilac-soft);padding:10px 18px;border-radius:999px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.wa svg{width:20px;height:20px;color:var(--lilac-deep)}
+.small{font-size:13.5px}.muted{color:var(--muted)}.center{text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+
+
+<div class="rev" id="rev">
+  <span class="rev-tag">Modo revisão</span>
+  <select id="jump" aria-label="Ir para a tela"></select>
+  <div class="grp">
+    <button id="prev" aria-label="Tela anterior">←</button>
+    <span class="count" id="count"></span>
+    <button id="next" aria-label="Próxima tela">→</button>
+  </div>
+  <div class="grp">
+    <span>Preencher exemplo:</span>
+    <button data-sim="0">Leve</button>
+    <button data-sim="1">Moderado</button>
+    <button data-sim="2">Crítico</button>
+    <button id="clear">Limpar</button>
+  </div>
+  <span class="grow"></span>
+  <button id="asdoc">Ver como o médico</button>
+</div>
+<button class="backrev" id="backrev" hidden>Voltar ao modo revisão</button>
+
+<div class="app review" id="app">
+  <nav class="side" id="side" aria-label="Telas do quiz"></nav>
+  <main class="stage" id="screen"></main>
+</div>
+
+<script>
+const AV = "avatar.png";
+const FRONTS = {
+  conversao:{n:"Conversão do particular", x:"o paciente particular que pergunta o valor e não marca"},
+  primeiro:{n:"Primeiro contato", x:"o paciente que desiste por demora no retorno"},
+  agenda:{n:"Agenda e faltas", x:"os horários vazios por falta e remarcação"},
+  glosa:{n:"Glosa", x:"o dinheiro perdido com glosa"},
+  tempo:{n:"Seu tempo", x:"a necessidade de você conferir e corrigir tudo"}
+};
+const FRONT_ORDER = ["conversao","primeiro","glosa","agenda","tempo"];
+const SIGNALS = ["p4","p5","p6","p7","p8","p9","p10"];
+
+const Q = {
+  p1:{q:"Como é o seu consultório hoje?", o:["Atendo sozinho(a) no meu consultório","Divido o espaço com outros médicos","Tenho uma clínica com várias especialidades"]},
+  p2:{q:"Quem atende o WhatsApp e o telefone dos seus pacientes?", o:["Uma secretária","Duas ou mais secretárias","Uma recepcionista que também cuida de outras funções","Eu mesmo(a) respondo boa parte das mensagens"],
+      note:"Pendência: decidir o que acontece com quem marca “Eu mesmo(a) respondo”. Por enquanto, segue o fluxo normal."},
+  p3:{q:"Como a sua agenda se divide hoje?", o:["Quase toda particular","Metade particular, metade convênio","Mais convênio do que particular","Quase só convênio"]},
+  p4:{q:"Nos últimos meses, a sua agenda particular...", f:"conversao", o:[["Está cheia, com fila de espera",0],["Está boa, mas sobram alguns horários",1],["Anda devagar, com horários vagos toda semana",2],["Quase não anda, enquanto o convênio vive cheio",3]],
+      at:"Agenda particular abaixo do que poderia, com o convênio cheio."},
+  p5:{q:"Algum paciente já te disse que demoraram para responder ou que não conseguiu marcar?", f:"primeiro", o:[["Nunca ouvi isso",0],["Raramente",1],["Algumas vezes",2],["Com frequência, e já perdi paciente por isso",3]],
+      at:"Pacientes já relataram demora ou falta de retorno."},
+  p6:{q:"Este mês, quantos pacientes particulares entraram em contato e não marcaram?", f:"conversao", o:[["Sei o número, e são poucos",0],["Tenho uma ideia, mas não sei o número exato",2],["Sei o número, e são muitos",3],["Não faço ideia",3]],
+      micro:{i:3,t:"A maioria dos médicos não sabe. É exatamente aí que o paciente se perde sem ninguém perceber."},
+      at:"Você não sabe quantos pacientes deixaram de marcar, ou sabe que são muitos."},
+  p7:{q:"Quando um paciente diz “achei caro” ou “vou pensar”, você sabe o que acontece depois?", f:"conversao", o:[["Sei: ela contorna, e o paciente costuma marcar",0],["Ela responde, mas o paciente costuma sumir",2],["Acho que ela só passa o valor e espera o paciente voltar",3],["Não faço ideia",3]],
+      at:"O “achei caro” e o “vou pensar” ficam sem a resposta certa."},
+  p8:{q:"Com que frequência você tem horário vazio por falta ou remarcação de última hora?", f:"agenda", o:[["Quase nunca",0],["Uma ou duas vezes por semana",1],["Várias vezes por semana",2],["Praticamente todo dia",3]],
+      at:"Horários vazios por falta ou remarcação toda semana."},
+  p9:{q:"Como você fica sabendo de uma glosa ou de um erro na cobrança do convênio?", f:"glosa", o:[["Não atendo convênio",null],["Ela confere e recorre, quase não acontece",0],["Às vezes descubro no extrato",2],["Só descubro meses depois, e não sei quanto já perdi",3]],
+      at:"A glosa só aparece no extrato, quando o dinheiro já foi perdido."},
+  p10:{q:"Quantas vezes por semana você precisa conferir, corrigir ou cobrar algo do atendimento?", f:"tempo", o:[["Quase nunca",0],["Uma ou duas vezes",1],["Quase todo dia",2],["Eu mesmo(a) acabo respondendo pacientes para não perder",3]],
+      at:"Você confere, corrige ou responde pacientes no lugar dela."},
+  p11:{lead:["Sem um roteiro de atendimento, a secretária improvisa.","Às vezes acerta. Às vezes perde o paciente sem perceber.","Na maioria dos consultórios, o que falta é método, não esforço."],
+      q:"Você acha que isso pode estar acontecendo no seu consultório?", o:["Com certeza","Talvez","Acho que não"]},
+  p12:{q:"Se nada mudar nos próximos 6 meses, o que mais te preocupa?", multi:true, o:["Continuar com a agenda particular parada","Continuar pagando anúncio sem ver retorno","Continuar perdendo dinheiro com glosa e faltas","Continuar sem tempo, tendo que conferir tudo"]},
+  p13:{q:"Você já tentou resolver o atendimento da sua secretária?", o:["Ainda não tentei","Tentei ensinar eu mesmo(a), mas não tive tempo","Ela fez curso, e nada mudou","Troquei de secretária, e o problema continuou"],
+      note:"Sem tela de resposta. A resposta a esta objeção aparece na página da solução recomendada."},
+  p14:{dyn:true, q:"Você está procurando resolver isso para quando?", o:["O quanto antes","Nos próximos 30 dias","Nos próximos 3 meses","Ainda não estou procurando resolver"],
+      note:"O problema citado na fala muda conforme o maior vazamento das respostas de sinais. Não aparece no resultado; vai para o time priorizar quem chamar primeiro."}
+};
+const DIFF = [
+  null,
+  {t:"Você não precisa ensinar nada.", d:"Os encontros são feitos direto com a sua secretária, sem tomar o seu tempo."},
+  {t:"Não é curso gravado.", d:"São encontros individuais e práticos, aplicados na rotina real do seu consultório."},
+  {t:"Trocar de pessoa não troca o método.", d:"O treinamento ensina o método à secretária que você já tem, para o improviso não voltar."}
+];
+const LEVELS = [
+  {n:"Atendimento que <em>aproxima</em>", f:"Seu consultório mostra poucos sinais de perda. O atendimento já trabalha a seu favor na maior parte do tempo."},
+  {n:"Atendimento que <em>deixa escapar</em>", f:"Seu consultório mostra sinais de que pacientes particulares podem estar se perdendo em momentos específicos da conversa."},
+  {n:"Atendimento que <em>afasta</em>", f:"Os sinais do seu consultório indicam que pacientes particulares estão desistindo antes de chegar até você."}
+];
+const LEVEL_PLAIN = ["Atendimento que aproxima","Atendimento que deixa escapar","Atendimento que afasta"];
+const PILL = ["Poucos sinais","Sinais de perda","Sinais graves"];
+const STATUS = ["Normal","Atenção","Alterado"];
+const RISKS = {
+  valor:{t:"Condução do valor da consulta", d:"Mesmo com procura, a forma como o valor é apresentado pode estar fazendo o particular desistir antes do “sim”."},
+  velocidade:{t:"Velocidade do primeiro contato", d:"Cada hora sem resposta no WhatsApp é tempo para o paciente marcar com quem respondeu primeiro."},
+  pensar:{t:"Retorno ao “vou pensar”", d:"Sem um retorno estruturado, o paciente que hesitou some, e ninguém volta a procurá-lo."},
+  visibilidade:{t:"Visibilidade da perda", d:"Sem saber quantos pacientes deixaram de marcar, a perda não aparece na agenda e não é corrigida."},
+  faturamento:{t:"Proteção do faturamento", d:"Mesmo com a consulta feita, a glosa sem conferência pode estar levando parte do que você já ganhou."},
+  ocupacao:{t:"Ocupação da agenda", d:"Sem confirmação e follow-up, horários reservados podem virar buracos que você só descobre no dia."},
+  posicionamento:{t:"Posicionamento no particular", d:"Enquanto a agenda depende do convênio, o paciente particular cria o hábito de marcar com outro médico."},
+  autonomia:{t:"Autonomia da recepção", d:"Você pode recuperar horas da sua semana com uma secretária que resolve sem você precisar conferir."}
+};
+const RISK_ORDER = ["valor","velocidade","pensar","visibilidade","faturamento","ocupacao","posicionamento"];
+const ICON = {
+  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg>',
+  box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>',
+  arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  wa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-3.9-1z"/></svg>'
+};
+
+const SCREENS = [
+  {k:"abertura", g:"Abertura", l:"Abertura"},
+  {k:"q", id:"p1", g:"Situação", l:"Consultório"},
+  {k:"q", id:"p2", g:"Situação", l:"Quem atende"},
+  {k:"q", id:"p3", g:"Situação", l:"Divisão da agenda"},
+  {k:"q", id:"p4", g:"Sinais", l:"Agenda particular"},
+  {k:"q", id:"p5", g:"Sinais", l:"Demora no retorno"},
+  {k:"q", id:"p6", g:"Sinais", l:"Quantos não marcaram"},
+  {k:"q", id:"p7", g:"Sinais", l:"“Achei caro”"},
+  {k:"q", id:"p8", g:"Sinais", l:"Faltas"},
+  {k:"q", id:"p9", g:"Sinais", l:"Glosa"},
+  {k:"q", id:"p10", g:"Sinais", l:"Seu tempo"},
+  {k:"q", id:"p11", g:"Mecanismo", l:"Improviso"},
+  {k:"q", id:"p12", g:"Implicação", l:"O que preocupa"},
+  {k:"q", id:"p13", g:"Objeção", l:"Já tentou"},
+  {k:"q", id:"p14", g:"Compromisso", l:"Para quando"},
+  {k:"captura", g:"Final", l:"Captura de contato"},
+  {k:"resultado", g:"Final", l:"Resultado"},
+  {k:"solucao", g:"Final", l:"Solução recomendada"},
+  {k:"confirma", g:"Final", l:"Confirmação"}
+];
+const QIDX = SCREENS.map((s,i)=>i).filter(i=>SCREENS[i].k==="q");
+
+const SIMS = [
+  {p1:0,p2:0,p3:1,p4:0,p5:0,p6:0,p7:0,p8:1,p9:1,p10:1,p11:1,p12:[3],p13:0,p14:2},
+  {p1:0,p2:0,p3:2,p4:2,p5:1,p6:1,p7:1,p8:1,p9:2,p10:1,p11:0,p12:[0,1],p13:2,p14:1},
+  {p1:0,p2:3,p3:3,p4:3,p5:3,p6:3,p7:3,p8:2,p9:3,p10:3,p11:0,p12:[0,1,2,3],p13:3,p14:0}
+];
+
+/* Modo: na versão de revisão abre com a barra de revisão; na versão publicada abre como o médico vê.
+   Na versão publicada, acrescente #revisao ao final do link para abrir o modo revisão. */
+const REVIEW_DEFAULT = false;
+const PROD = !REVIEW_DEFAULT && location.hash !== "#revisao";
+
+let st = {i:0, a:{}, name:"", wa:"", preview:false};
+if(!PROD){ try{const s=JSON.parse(localStorage.getItem("quiz-se-v3")||"null"); if(s) st=Object.assign(st,s,{preview:false});}catch(e){} }
+function save(){ if(PROD) return; try{localStorage.setItem("quiz-se-v3",JSON.stringify(st));}catch(e){} }
+
+/* Rastreamento: Meta Pixel e envio do lead ao CRM */
+const WEBHOOK_URL = "https://crmdracarolinasato.lovable.app/api/public/receber-lead?key=IRYhDwsu3aIqBTNn9U1lYLITPM6nAnZ6hmkCi2iH";
+const WEBHOOK_KEY = "IRYhDwsu3aIqBTNn9U1lYLITPM6nAnZ6hmkCi2iH";
+const PARAMS = new URLSearchParams(location.search);
+const fired = {};
+function track(ev, custom){ try{ if(window.fbq) custom ? fbq("trackCustom", ev) : fbq("track", ev); }catch(e){} }
+function trackOnce(ev, custom){ if(fired[ev]) return; fired[ev]=true; track(ev, custom); }
+function onlyDigits(s){ let d=String(s||"").replace(/\D/g,""); if(d.length>=12 && d.startsWith("55")) d=d.slice(2); return d; }
+function answerText(q,a){ if(Array.isArray(a)) return a.map(k=>q.o[k]).join("; "); const o=q.o[a]; return Array.isArray(o)?o[0]:o; }
+function buildPayload(etapa){
+  const r=score(), respostas=[];
+  QIDX.forEach(i=>{ const id=SCREENS[i].id, q=Q[id], a=st.a[id];
+    if(a==null || (Array.isArray(a)&&!a.length)) return;
+    const pergunta = q.dyn ? `Para quando quer resolver: ${FRONTS[r.top].n}` : q.q;
+    respostas.push({pergunta, resposta:answerText(q,a)}); });
+  respostas.push({pergunta:"Resultado do raio-x", resposta:`${LEVEL_PLAIN[r.lvl]} (${r.pct}% dos pontos)`});
+  respostas.push({pergunta:"Maior vazamento", resposta:FRONTS[r.top].n});
+  respostas.push({pergunta:"Pontos de atenção", resposta:risks().map(k=>RISKS[k].t).join("; ")});
+  respostas.push({pergunta:"Etapa", resposta: etapa==="contato" ? "Pediu para receber mais informações (equipe deve chamar no WhatsApp)" : "Concluiu o raio-x e informou o contato"});
+  ["utm_medium","utm_campaign","utm_content","utm_term"].forEach(k=>{ const v=PARAMS.get(k); if(v) respostas.push({pergunta:k, resposta:v}); });
+  return { origem:"quiz", nome:st.name.trim(), whatsapp:onlyDigits(st.wa), respostas, utm_source:PARAMS.get("utm_source")||"", url_origem:location.href };
+}
+function sendLead(etapa){
+  try{
+    fetch(WEBHOOK_URL,{method:"POST",keepalive:true,headers:{"Content-Type":"application/json","x-webhook-key":WEBHOOK_KEY},body:JSON.stringify(buildPayload(etapa))}).catch(()=>{});
+  }catch(e){}
+}
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const firstName = () => st.name.trim()?esc(st.name.trim().split(/\s+/)[0]):"";
+
+function score(){
+  let tot=0,max=0; const fr={};
+  SIGNALS.forEach(id=>{
+    const q=Q[id], ans=st.a[id], f=q.f;
+    fr[f]=fr[f]||{p:0,m:0,on:true,sig:[]};
+    if(id==="p9"&&ans===0){fr[f].on=false;return;}
+    const p = ans==null?0:q.o[ans][1];
+    tot+=p; max+=3; fr[f].p+=p; fr[f].m+=3;
+    if(p>=2) fr[f].sig.push(q.at);
+  });
+  const pct = max?Math.round(tot/max*100):0;
+  const lvl = pct<=50?1:2;
+  let top=null,best=-1;
+  FRONT_ORDER.forEach(f=>{const x=fr[f]; if(!x||!x.on||!x.m) return; const v=x.p/x.m; if(v>best){best=v;top=f;}});
+  return {tot,max,pct,lvl,fr,top:top||"conversao"};
+}
+function risks(){
+  const pts=id=>{const a=st.a[id]; if(a==null) return -1; const v=Q[id].o[a][1]; return v==null?-1:v;};
+  const sev={valor:pts("p4"),velocidade:pts("p5"),pensar:pts("p7"),visibilidade:(st.a.p6===3||st.a.p7===3)?3:-1,
+    faturamento:pts("p9"),ocupacao:pts("p8"),posicionamento:st.a.p3==null?-1:(st.a.p3>=2?st.a.p3:-1)};
+  const ranked=RISK_ORDER.filter(k=>sev[k]>=2).sort((a,b)=>sev[b]-sev[a]);
+  const gain=pts("p10")>=1;
+  const out=ranked.slice(0,gain?2:3);
+  RISK_ORDER.forEach(k=>{if(out.length<(gain?2:3)&&!out.includes(k)) out.push(k);});
+  if(gain) out.push("autonomia");
+  return out;
+}
+
+const note = t => `<div class="note"><b>Nota de revisão</b>${t}</div>`;
+const av = (cls="av") => `<img class="${cls}" src="${AV}" alt="Dra. Carolina Sato">`;
+const talk = lines => `<div class="talk">${av()}<div class="bubble"><span class="from">Dra. Carolina</span>${lines.map(t=>`<p>${esc(t)}</p>`).join("")}</div></div>`;
+
+function qhead(i){
+  const n=QIDX.indexOf(i), tot=QIDX.length;
+  const pct=n>=0?Math.round((n+1)/tot*100):100;
+  const step=n>=0?`${n+1} de ${tot}`:"Última etapa";
+  return `<div class="qhead"><div class="row">${av()}<div class="who">Dra. Carolina Sato<small>Raio-X da Agenda Particular</small></div><span class="step">${step}</span></div>
+  <div class="prog" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div></div>`;
+}
+
+function renderOpening(){
+  return `<div class="col">
+      <img class="banner-img" src="banner.png" width="1200" height="520" alt="Raio-X da Agenda Particular. Para médicos donos de consultório. Responda sobre o atendimento do seu consultório e descubra por que sua agenda particular não está cheia. 2 minutos, resultado na hora. Dra. Carolina Sato, pediatra, CRM-PR 29.312, RQE 20.341.">
+      <h1 class="h1">A procura por consulta particular existe. <em>Ela só não está chegando até você.</em></h1>
+      <p class="h2">Responda ao raio-x de <b>2 minutos</b> e descubra em que ponto do atendimento esses pacientes estão desistindo.</p>
+      <button class="cta" data-go="next">Fazer meu raio-x ${ICON.arrow}</button>
+      <div class="card"><h4>Ao final, você recebe:</h4>
+        <ul class="check"><li>Em que ponto do atendimento seus pacientes particulares estão desistindo</li><li>Os sinais do seu consultório que apontam perda de paciente</li><li>Os pontos de atenção do seu caso e a solução recomendada</li></ul></div>
+      <p class="footline">Você não precisa perguntar nada à sua secretária. Na maioria dos consultórios, o que falta é método, não esforço.</p>
+      ${note("Abertura nova aprovada em 15/10. Banner final, o mesmo no desktop e no celular. Depoimento segue como pendência.")}
+    </div>`;
+}
+
+function renderQ(id){
+  const q=Q[id], ans=st.a[id], s=SCREENS[st.i];
+  let h=qhead(st.i)+`<span class="chip">${ICON.box}${s.g}</span>`;
+  if(q.lead) h+=talk(q.lead);
+  if(q.dyn){ const r=score(); h+=talk([`Nós temos um método que treina a sua secretária para acabar com ${FRONTS[r.top].x}.`]); }
+  h+=`<h2 class="q">${esc(q.q)}</h2>`;
+  if(q.multi) h+=`<p class="hint">Pode marcar mais de uma.</p>`;
+  h+=`<div class="opts">`;
+  q.o.forEach((o,k)=>{
+    const t=Array.isArray(o)?o[0]:o, p=Array.isArray(o)?o[1]:undefined;
+    const sel=q.multi?(ans||[]).includes(k):ans===k;
+    const pts=p===undefined?"":(p===null?`<span class="pts">não pontua</span>`:`<span class="pts">${p} pt</span>`);
+    h+=`<button class="opt${sel?" sel":""}" data-opt="${k}" aria-pressed="${sel}"><span class="lt">${sel&&q.multi?"✓":"ABCD"[k]}</span><span>${esc(t)}</span>${pts}</button>`;
+  });
+  h+=`</div>`;
+  if(q.micro && ans===q.micro.i) h+=`<div class="micro">${esc(q.micro.t)}</div><button class="cta" data-go="next">Continuar ${ICON.arrow}</button>`;
+  if(q.multi) h+=`<button class="cta" data-go="next" ${(ans&&ans.length)?"":"disabled"}>Continuar ${ICON.arrow}</button>`;
+  if(q.f) h+=note(`Frente: ${FRONTS[q.f].n}. Pontua de 0 a 3.${q.micro?" Ao marcar “Não faço ideia”, aparece o aviso e o botão Continuar.":""}`);
+  if(q.note) h+=note(q.note);
+  return `<div class="col">${h}</div>`;
+}
+
+function renderCapture(){
+  return `<div class="col">${qhead(st.i)}<span class="chip">${ICON.box}Raio-x pronto</span>
+    <h2 class="q">Seu raio-x está pronto. Em nome de quem devemos gerar?</h2>
+    <p class="muted">O raio-x sai no seu nome e fica vinculada ao seu WhatsApp, para você poder conversar com a equipe da Dra. Carolina sobre o resultado, se quiser.</p>
+    <div class="field"><label for="f-nome">Seu nome</label><input id="f-nome" autocomplete="name" value="${esc(st.name)}"></div>
+    <div class="field"><label for="f-wa">WhatsApp com DDD</label><input id="f-wa" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" value="${esc(st.wa)}"></div>
+    <button class="cta" data-go="captura">Ver meu raio-x ${ICON.arrow}</button>
+    ${note("Pretexto: gerar o raio-x em nome dele, já que não há envio de cópia. No modo revisão os campos não são obrigatórios; em “Ver como o médico”, são. Na ferramenta final, nome e WhatsApp vão para o CRM do time.")}</div>`;
+}
+
+function renderResult(){
+  const r=score(), L=LEVELS[r.lvl], nm=firstName();
+  let items="";
+  FRONT_ORDER.forEach(f=>{const x=r.fr[f]; if(!x||!x.on||!x.m) return;
+    const v=x.p/x.m, s=v<=.33?0:v<=.66?1:2;
+    items+=`<div class="item"><b>${FRONTS[f].n}</b><span class="flag f${s}">${STATUS[s]}</span>${x.sig.map(t=>`<span class="sig">${esc(t)}</span>`).join("")}</div>`;});
+  let h="";
+  if(!Object.keys(st.a).length) h+=note("Nenhuma resposta ainda. Use “Preencher exemplo” na barra de cima para ver cada nível.");
+  h+=`<div class="rescard">
+    <div class="top">${av()}<div class="who"><b>Raio-X da Agenda Particular${nm?` · ${nm}`:""}</b>Desenvolvido pela Dra. Carolina Sato</div></div>
+    <span class="lvlpill l${r.lvl}">${PILL[r.lvl]}</span>
+    <h2 class="level">${L.n}</h2><p class="muted">${L.f}</p>
+    <div><div class="gtrack"><span class="gmark" style="left:${Math.min(97,Math.max(3,r.pct))}%"></span></div>
+    <div class="glabels"><span>Deixa escapar</span><span>Afasta</span></div></div>
+    <div class="items">${items}</div>
+  </div>`;
+  h+=note(`Pontuação: ${r.tot} de ${r.max} (${r.pct}%). Nível: até 50% deixa escapar, acima afasta. Não existe mais o nível “aproxima”: todo resultado aponta algo a corrigir. Cada item: até 33% normal, até 66% atenção, acima alterado. Abaixo de cada item aparecem os sinais que ele marcou com 2 ou 3 pontos. Pesos a validar com a Dra. Carolina.`);
+  h+=`<div class="alert-h"><span class="alert-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5L2.8 19.5h18.4z"/><path d="M12 10v4.2M12 17.2v.1"/></svg></span><h3>Encontramos 3 pontos de atenção no atendimento do seu consultório.</h3></div><div class="risks">`;
+  risks().forEach(k=>{h+=`<div class="risk"><b><i></i>${RISKS[k].t}</b><span>${RISKS[k].d}</span></div>`;});
+  h+=`</div>`;
+  h+=note("Os 3 pontos vêm das respostas: os dois sinais mais graves (2 ou 3 pontos) e, quando ele gasta tempo conferindo a secretária, fecha com o ponto de ganho “Autonomia da recepção”. Sem isso, entram os três sinais mais graves.");
+  h+=`<button class="cta" data-go="next">Ver a solução recomendada ${ICON.arrow}</button>`;
+  return `<div class="col">${h}</div>`;
+}
+
+function renderSolution(){
+  const r=score(), d=st.a.p13!=null?DIFF[st.a.p13]:null;
+  let h=`<span class="chip">${ICON.box}Solução recomendada para o seu caso</span>
+  <div class="offer"><h1>Secretária <em>Estratégica</em></h1>
+    <p>Um treinamento individual para transformar a sua secretária em quem lota sua agenda particular, reduz glosa e faltas, sem você precisar ficar conferindo tudo.</p>
+    <span class="focus">No seu caso, o foco começa por <b>${FRONTS[r.top].n}</b></span></div>
+  <h3 class="sech">O que a sua secretária <em>aprende</em></h3>
+  <div class="pillars">
+    <div><i>1</i><b>Atendimento que vende</b><span>Responder WhatsApp e telefone gerando desejo pela consulta particular, não só passando informação.</span></div>
+    <div><i>2</i><b>Contorno de objeções</b><span>Scripts prontos para “achei caro”, “vou pensar” e “vocês atendem convênio?”.</span></div>
+    <div><i>3</i><b>Gestão de agenda</b><span>Menos faltas, remarcações e glosas, com confirmação e follow-up simples.</span></div>
+    <div><i>4</i><b>Postura e autoridade</b><span>Representar a clínica com a mesma seriedade que você tem com seus pacientes.</span></div>
+  </div>
+  <div class="card"><h4>Como funciona</h4><ul class="check">
+    <li>Encontros individuais e práticos com a sua secretária</li>
+    <li>Aplicação direta na rotina real do seu consultório</li>
+    <li>Acompanhamento dos resultados durante o processo</li>
+    <li>Você não precisa participar dos encontros</li></ul></div>`;
+  if(d) h+=`<div class="diff"><b>${d.t}</b><span>${d.d}</span></div>`;
+  h+=note("O quadro acima responde à objeção marcada em “Você já tentou resolver?”. Some para quem marcou “Ainda não tentei”.");
+  h+=`<div class="card mentor">${av()}<div><span class="muted small">Sua mentora</span><b>Dra. Carolina Sato</b><small>Pediatra · CRM-PR 29.312 · RQE 20.341</small>
+    <p>Formada pela Unioeste, com especialização em Pediatria pelo HUOP e em Nutrologia Pediátrica. Coordenou o Serviço de Pediatria do HUOP, é docente na Unioeste e na FAG e fundou a clínica infantil Mame Kids.</p></div></div>`;
+  h+=`<p class="proof">Médicos que já passaram por esse processo aumentaram em <em>até 50% suas consultas particulares em 30 dias.</em></p>`;
+  h+=note("Frase de prova copiada da página de vendas atual. Confirmar que há casos reais por trás antes de subir.");
+  h+=`<div class="decide"><h2>Quer receber mais informações sobre o <em>Secretária Estratégica</em>?</h2>
+    <p>Nossa equipe apresenta o programa e explica como ele funcionaria no seu consultório.</p>
+    <button class="cta" data-go="next">Sim, quero receber mais informações ${ICON.arrow}</button>
+    <p class="small muted center">Vagas limitadas por turma: o acompanhamento é individual, não é curso em massa.</p></div>`;
+  h+=note("A frase das vagas vem da página atual e só fica se a limitação for real.");
+  return `<div class="col">${h}</div>`;
+}
+
+function renderConfirm(){
+  const nm=firstName();
+  return `<div class="col"><div class="done"><span class="big-ic" aria-hidden="true"></span>
+    <h1>${nm?`Pronto, ${nm}!`:"Pronto!"} <em>Recebemos seu pedido.</em></h1>
+    <p>Nos próximos minutos, a equipe da Dra. Carolina vai entrar em contato pelo WhatsApp:</p>
+    <span class="wa">${ICON.wa}${st.wa.trim()?esc(st.wa.trim()):"(número informado)"}</span>
+    <p class="small">Fique de olho nas mensagens. Nessa conversa, a equipe apresenta o Secretária Estratégica e tira as suas dúvidas.</p>
+  </div>
+  ${note("“Nos próximos minutos” só vale se o time responder nesse prazo. Prever outra mensagem para pedidos fora do horário de atendimento. Pendência: informar o número de onde a equipe vai chamar, para ele salvar.")}</div>`;
+}
+
+function render(){
+  const s=SCREENS[st.i], el=document.getElementById("screen");
+  let h="";
+  if(s.k==="abertura") h=renderOpening();
+  else if(s.k==="q") h=renderQ(s.id);
+  else if(s.k==="captura") h=renderCapture();
+  else if(s.k==="resultado") h=renderResult();
+  else if(s.k==="solucao") h=renderSolution();
+  else if(s.k==="confirma") h=renderConfirm();
+  el.innerHTML=h; updateChrome(); save();
+}
+function go(n){st.i=Math.max(0,Math.min(SCREENS.length-1,n)); render(); window.scrollTo({top:0});}
+
+document.getElementById("screen").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  const s=SCREENS[st.i];
+  if(b.dataset.opt!=null){
+    const q=Q[s.id], k=+b.dataset.opt;
+    if(q.multi){const a=st.a[s.id]||[]; st.a[s.id]=a.includes(k)?a.filter(x=>x!==k):[...a,k]; render(); return;}
+    st.a[s.id]=k; render();
+    if(q.micro && k===q.micro.i) return;
+    setTimeout(()=>go(st.i+1),260); return;
+  }
+  const g=b.dataset.go;
+  if(g==="next"){
+    if(s.k==="abertura") trackOnce("IniciouQuiz", true);
+    if(s.k==="solucao" && !fired.Contact){ trackOnce("Contact"); sendLead("contato"); }
+    go(st.i+1);
+  }
+  else if(g==="captura"){
+    st.name=document.getElementById("f-nome").value; st.wa=document.getElementById("f-wa").value;
+    if(st.preview && (!st.name.trim()||st.wa.replace(/\D/g,"").length<10)){
+      const el=document.getElementById("screen"); if(!el.querySelector(".err")){const p=document.createElement("p"); p.className="err"; p.textContent="Preencha o nome e um WhatsApp com DDD para ver o raio-x."; el.querySelector(".cta").before(p);} return;}
+    if(!fired.Lead){ trackOnce("Lead"); sendLead("captura"); }
+    go(st.i+1);
+  }
+});
+document.getElementById("screen").addEventListener("input",e=>{
+  if(e.target.id==="f-nome") st.name=e.target.value;
+  if(e.target.id==="f-wa") st.wa=e.target.value;
+  save();
+});
+
+const jump=document.getElementById("jump"), side=document.getElementById("side");
+(function build(){
+  let html="", sh="", last=null;
+  SCREENS.forEach((s,i)=>{
+    if(s.g!==last){ if(last!==null){html+="</optgroup>"; sh+="</ol>";} html+=`<optgroup label="${s.g}">`; sh+=`<h2>${s.g}</h2><ol>`; last=s.g;}
+    const n=QIDX.indexOf(i); const lab=(n>=0?`${n+1}. `:"")+s.l;
+    html+=`<option value="${i}">${lab}</option>`;
+    sh+=`<li><button data-i="${i}"><span class="dot"></span>${lab}</button></li>`;
+  });
+  jump.innerHTML=html+"</optgroup>"; side.innerHTML=sh+"</ol>";
+})();
+jump.addEventListener("change",()=>go(+jump.value));
+side.addEventListener("click",e=>{const b=e.target.closest("button[data-i]"); if(b) go(+b.dataset.i);});
+document.getElementById("prev").onclick=()=>go(st.i-1);
+document.getElementById("next").onclick=()=>go(st.i+1);
+document.querySelectorAll("[data-sim]").forEach(b=>b.onclick=()=>{
+  st.a=JSON.parse(JSON.stringify(SIMS[+b.dataset.sim])); if(!st.name) st.name="Ricardo Lima"; if(!st.wa) st.wa="(45) 99999-0000";
+  go(SCREENS.findIndex(s=>s.k==="resultado"));
+});
+document.getElementById("clear").onclick=()=>{st.a={};st.name="";st.wa="";go(0);};
+function setPreview(on){
+  st.preview=on; document.body.classList.toggle("preview",on);
+  document.getElementById("rev").hidden=on; document.getElementById("backrev").hidden=!on||PROD;
+  document.getElementById("app").classList.toggle("review",!on);
+  render();
+}
+document.getElementById("asdoc").onclick=()=>setPreview(true);
+document.getElementById("backrev").onclick=()=>setPreview(false);
+function updateChrome(){
+  jump.value=st.i; document.getElementById("count").textContent=`${st.i+1}/${SCREENS.length}`;
+  side.querySelectorAll("button[data-i]").forEach(b=>{const i=+b.dataset.i, s=SCREENS[i];
+    b.classList.toggle("cur",i===st.i);
+    const a=s.k==="q"?st.a[s.id]:null;
+    b.querySelector(".dot").classList.toggle("done",a!=null&&!(Array.isArray(a)&&!a.length));});
+}
+document.addEventListener("keydown",e=>{
+  if(st.preview||["INPUT","SELECT","TEXTAREA"].includes(e.target.tagName)) return;
+  if(e.key==="ArrowRight") go(st.i+1); if(e.key==="ArrowLeft") go(st.i-1);
+});
+if(PROD) setPreview(true); else render();
+</script>
+
+</body>
+</html>
