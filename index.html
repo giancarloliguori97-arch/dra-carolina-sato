@@ -126,7 +126,7 @@ h2.q{font-family:var(--serif);font-weight:400;font-size:clamp(25px,6vw,31px);lin
 .hint{color:var(--muted);font-size:14px;margin-top:-8px}
 .opts{display:grid;gap:10px}
 .opt{display:flex;gap:14px;align-items:center;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;cursor:pointer;transition:border-color .15s,background .15s,transform .1s;font-size:16px;line-height:1.35;font-weight:500;box-shadow:0 1px 2px rgba(60,40,90,.04)}
-.opt:hover{border-color:var(--lilac);transform:translateY(-1px)}
+@media (hover:hover) and (pointer:fine){.opt:hover{border-color:var(--lilac);transform:translateY(-1px)}}
 .opt .lt{width:30px;height:30px;border-radius:50%;background:var(--lilac-soft);color:var(--lilac-deep);display:grid;place-items:center;flex:none;font-weight:800;font-size:13px}
 .opt.sel{border-color:var(--lilac);background:var(--lilac-tint)}
 .opt.sel .lt{background:var(--lilac);color:#fff}
@@ -142,6 +142,12 @@ h2.q{font-family:var(--serif);font-weight:400;font-size:clamp(25px,6vw,31px);lin
 .field label{font-size:14px;font-weight:700}
 .field input{border:1.5px solid var(--line);border-radius:14px;padding:15px 16px;background:var(--surface);font-size:16px}
 .field input:focus{border-color:var(--lilac);outline:none;box-shadow:0 0 0 4px var(--lilac-soft)}
+.phone{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.phone:focus-within{border-color:var(--lilac);box-shadow:0 0 0 4px var(--lilac-soft)}
+.phone .ddi{display:flex;align-items:center;gap:6px;padding:0 14px;background:var(--lilac-soft);color:var(--lilac-deep);font-weight:800;font-size:16px;border-right:1.5px solid var(--line);white-space:nowrap}
+.field .phone input{border:0;border-radius:0;flex:1;min-width:0;box-shadow:none;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.field .phone input:focus{box-shadow:none}
+.hint-wa{font-size:13px;color:var(--muted)}
 .err{color:var(--bad);font-size:14px;font-weight:600}
 
 /* Notas de revisão */
@@ -363,7 +369,18 @@ const PARAMS = new URLSearchParams(location.search);
 const fired = {};
 function track(ev, custom){ try{ if(window.fbq) custom ? fbq("trackCustom", ev) : fbq("track", ev); }catch(e){} }
 function trackOnce(ev, custom){ if(fired[ev]) return; fired[ev]=true; track(ev, custom); }
-function onlyDigits(s){ let d=String(s||"").replace(/\D/g,""); if(d.length>=12 && d.startsWith("55")) d=d.slice(2); return d; }
+function onlyDigits(s){ let d=String(s||"").replace(/\D/g,""); if(d.length>=12 && d.startsWith("55")) d=d.slice(2); return d.slice(0,11); }
+/* Máscara do WhatsApp: (DD) 9XXXX-XXXX. Se a pessoa colar com +55, o 55 é removido. */
+function fmtPhone(v){
+  const d=onlyDigits(v); if(!d) return "";
+  if(d.length<3) return "("+d;
+  const ddd=d.slice(0,2), r=d.slice(2);
+  if(!r) return "("+ddd;
+  if(r.length<=4) return `(${ddd}) ${r}`;
+  if(d.length<=10) return `(${ddd}) ${r.slice(0,4)}-${r.slice(4)}`;
+  return `(${ddd}) ${r.slice(0,5)}-${r.slice(5)}`;
+}
+function validPhone(v){ const d=onlyDigits(v); return /^[1-9][1-9]/.test(d) && (d.length===11 ? d[2]==="9" : d.length===10); }
 function answerText(q,a){ if(Array.isArray(a)) return a.map(k=>q.o[k]).join("; "); const o=q.o[a]; return Array.isArray(o)?o[0]:o; }
 function buildPayload(etapa){
   const r=score(), respostas=[];
@@ -466,7 +483,9 @@ function renderCapture(){
     <h2 class="q">Seu raio-x está pronto. Em nome de quem devemos gerar?</h2>
     <p class="muted">O raio-x sai no seu nome e fica vinculada ao seu WhatsApp, para você poder conversar com a equipe da Dra. Carolina sobre o resultado, se quiser.</p>
     <div class="field"><label for="f-nome">Seu nome</label><input id="f-nome" autocomplete="name" value="${esc(st.name)}"></div>
-    <div class="field"><label for="f-wa">WhatsApp com DDD</label><input id="f-wa" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" value="${esc(st.wa)}"></div>
+    <div class="field"><label for="f-wa">WhatsApp com DDD</label>
+      <div class="phone"><span class="ddi" aria-hidden="true">+55</span><input id="f-wa" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="(00) 00000-0000" aria-describedby="wa-hint" value="${esc(fmtPhone(st.wa))}"></div>
+      <span class="hint-wa" id="wa-hint">Digite só o DDD e o número. O +55 já está incluído.</span></div>
     <button class="cta" data-go="captura">Ver meu raio-x ${ICON.arrow}</button>
     ${note("Pretexto: gerar o raio-x em nome dele, já que não há envio de cópia. No modo revisão os campos não são obrigatórios; em “Ver como o médico”, são. Na ferramenta final, nome e WhatsApp vão para o CRM do time.")}</div>`;
 }
@@ -570,15 +589,15 @@ document.getElementById("screen").addEventListener("click",e=>{
   }
   else if(g==="captura"){
     st.name=document.getElementById("f-nome").value; st.wa=document.getElementById("f-wa").value;
-    if(st.preview && (!st.name.trim()||st.wa.replace(/\D/g,"").length<10)){
-      const el=document.getElementById("screen"); if(!el.querySelector(".err")){const p=document.createElement("p"); p.className="err"; p.textContent="Preencha o nome e um WhatsApp com DDD para ver o raio-x."; el.querySelector(".cta").before(p);} return;}
+    if(st.preview && (!st.name.trim()||!validPhone(st.wa))){
+      const el=document.getElementById("screen"); if(!el.querySelector(".err")){const p=document.createElement("p"); p.className="err"; p.textContent="Confira o seu nome e o WhatsApp com DDD, por exemplo (45) 99999-0000."; el.querySelector(".cta").before(p);} return;}
     if(!fired.Lead){ trackOnce("Lead"); sendLead("captura"); }
     go(st.i+1);
   }
 });
 document.getElementById("screen").addEventListener("input",e=>{
   if(e.target.id==="f-nome") st.name=e.target.value;
-  if(e.target.id==="f-wa") st.wa=e.target.value;
+  if(e.target.id==="f-wa"){ e.target.value=fmtPhone(e.target.value); st.wa=e.target.value; }
   save();
 });
 
